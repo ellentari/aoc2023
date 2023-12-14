@@ -20,10 +20,10 @@ case class Grid[A](rows: IndexedSeq[IndexedSeq[A]]) {
   def updated(row: Int, col: Int, f: A => A): Grid[A] =
     Grid(rows.updated(row, rows(row).updated(col, f(apply(row, col)))))
 
-  def rowIndicesAbove(row: Int): Range = row - 1 to 0 by -1
-  def rowIndicesBelow(row: Int): Range = row + 1 until height
-  def columnIndicesLeft(col: Int): Range = col - 1 to 0 by -1
-  def columnIndicesRight(col: Int): Range = col + 1 until width
+  def shootUp(row: Int): Range = row - 1 to 0 by -1
+  def shootDown(row: Int): Range = row + 1 until height
+  def shootLeft(col: Int): Range = col - 1 to 0 by -1
+  def shootRight(col: Int): Range = col + 1 until width
 
   def indices: List[Index] = rows.indices.flatMap(row => rows(row).indices.map(Index(row, _))).toList
   def rowIndices: Range = rows.indices
