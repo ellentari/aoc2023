@@ -33,8 +33,8 @@ case class Grid[A](rows: IndexedSeq[IndexedSeq[A]]) {
     (topSideIndices ++ bottomSideIndices ++ rightSideIndices ++ leftSideIndices).distinct
   def topSideIndices: IndexedSeq[Index] = columnIndices.map(Index(0, _))
   def bottomSideIndices: IndexedSeq[Index] = columnIndices.map(Index(height - 1, _))
-  def rightSideIndices: IndexedSeq[Index] = rowIndices.map(Index(_, 0))
-  def leftSideIndices: IndexedSeq[Index] = rowIndices.map(Index(_, width - 1))
+  def leftSideIndices: IndexedSeq[Index] = rowIndices.map(Index(_, 0))
+  def rightSideIndices: IndexedSeq[Index] = rowIndices.map(Index(_, width - 1))
 
   def adjacent4(index: Index): List[Index] = adjacent4(index.row, index.column)
   def adjacent4(row: Int, col: Int): List[Index] =
