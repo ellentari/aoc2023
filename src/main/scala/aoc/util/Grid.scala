@@ -4,6 +4,11 @@ import aoc.util.Grid.Index
 
 case class Grid[A](rows: IndexedSeq[IndexedSeq[A]]) {
 
+  val topLeftCorner: Index = Index(0, 0)
+  val topRightCorner: Index = Index(0, width - 1)
+  val bottomLeftCorner: Index = Index(height - 1, 0)
+  val bottomRightCorner: Index = Index(height - 1, width - 1)
+
   def columns: IndexedSeq[IndexedSeq[A]] = (0 until width).map(col => rows.map(_(col)))
 
   def height: Int = rows.length
