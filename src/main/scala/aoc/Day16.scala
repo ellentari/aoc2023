@@ -36,7 +36,7 @@ object Day16 extends App {
 
   private def getEnergyLevel(grid: Grid[Cell], start: Index, startDir: Direction): Int = {
     val set = scala.collection.mutable.HashSet.empty[Index]
-    BFS.visitAll((start, startDir))((getNext(grid) _).tupled, (t, _) => set.add(t._1))
+    BFS.visitAll((start, startDir))((getNext(grid) _).tupled, t => set.add(t._1))
     set.size
   }
 

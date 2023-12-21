@@ -121,7 +121,7 @@ object Day10 extends App {
 
     BFS.visitAll(borders)(
       grid.adjacent8(_).filterNot(pipes.contains),
-      (idx, _) => markedGrid = markedGrid.updated(idx, Cell.Outside)
+      idx => markedGrid = markedGrid.updated(idx, Cell.Outside)
     )
 
     markedGrid

@@ -29,7 +29,7 @@ object BFS {
 
   def maxDistance[A](start: A)(next: A => List[A]): Int = {
     var maxDistance = 0
-    visitAll(start)(next, (_, dist) => maxDistance = maxDistance max dist)
+    visitAllWithDistance(List(start))((a, _) => next(a), (_, dist) => maxDistance = maxDistance max dist)
     maxDistance
   }
 
@@ -38,14 +38,17 @@ object BFS {
 
   def discoverRegion[A](starts: List[A])(next: A => List[A]): List[A] = {
     val result = scala.collection.mutable.ListBuffer.empty[A]
-    visitAll(starts)(next, (a, _) => result.append(a))
+    visitAll(starts)(next, a => result.append(a))
     result.toList
   }
 
-  def visitAll[A](start: A)(next: A => List[A], onVisit: (A, Int) => Unit): Unit =
+  def visitAll[A](start: A)(next: A => List[A], onVisit: A => Unit): Unit =
     visitAll(List(start))(next, onVisit)
 
-  def visitAll[A](start: Iterable[A])(next: A => List[A], onVisit: (A, Int) => Unit): Unit = {
+  def visitAll[A](start: Iterable[A])(next: A => List[A], onVisit: A => Unit): Unit =
+    visitAllWithDistance(start)((a, _) => next(a), (a, _) => onVisit(a))
+
+  def visitAllWithDistance[A](start: Iterable[A])(next: (A, Int) => List[A], onVisit: (A, Int) => Unit): Unit = {
     @tailrec
     def loop(queue: Queue[(A, Int)], seen: Set[A]): Unit =
       queue.dequeueOption match {
@@ -53,7 +56,7 @@ object BFS {
         case Some(((a, distance), tail)) =>
           onVisit(a, distance)
 
-          val toVisit = next(a).filterNot(seen.contains)
+          val toVisit = next(a, distance).filterNot(seen.contains)
 
           loop(tail ++ toVisit.map(n => n -> (distance + 1)), seen ++ toVisit)
       }
