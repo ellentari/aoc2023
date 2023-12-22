@@ -7,14 +7,14 @@ case class Interval(start: Long, end: Long) {
   def contains(other: Interval): Boolean =
     start <= other.start && other.end <= end
 
-  def overlaps(other: Interval): Boolean =
+  def intersects(other: Interval): Boolean =
     other.start <= end && start <= other.end
 
   def intersect(other: Interval): Option[Interval] =
-    Option.when(overlaps(other))(Interval(start max other.start, end min other.end))
+    Option.when(intersects(other))(Interval(start max other.start, end min other.end))
 
   def union(other: Interval): Option[Interval] =
-    Option.when(overlaps(other))(Interval(start min other.start, end max other.end))
+    Option.when(intersects(other))(Interval(start min other.start, end max other.end))
 
   def remove(interval: Interval): List[Interval] =
     intersect(interval) match {
