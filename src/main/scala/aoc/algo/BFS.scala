@@ -2,6 +2,7 @@ package aoc.algo
 
 import scala.annotation.tailrec
 import scala.collection.immutable.Queue
+import scala.collection.mutable
 
 object BFS {
 
@@ -27,6 +28,19 @@ object BFS {
     loop(Queue(start), Map.empty, Set(start))
   }
 
+  def shortestPathLengthsToAll[A](start: A)(next: A => List[A], isEnd: A => Boolean): List[(A, Int)] = {
+    val result = mutable.ListBuffer.empty[(A, Int)]
+
+    visitAllWithDistance(List(start))(
+      (a, _) => if (a == start || !isEnd(a)) next(a) else Nil,
+      (a, distance) =>
+        if (a != start && isEnd(a))
+          result.append(a -> distance)
+    )
+
+    result.toList
+  }
+
   def maxDistance[A](start: A)(next: A => List[A]): Int = {
     var maxDistance = 0
     visitAllWithDistance(List(start))((a, _) => next(a), (_, dist) => maxDistance = maxDistance max dist)
@@ -37,7 +51,7 @@ object BFS {
     discoverRegion(List(start))(next)
 
   def discoverRegion[A](starts: List[A])(next: A => List[A]): List[A] = {
-    val result = scala.collection.mutable.ListBuffer.empty[A]
+    val result = mutable.ListBuffer.empty[A]
     visitAll(starts)(next, a => result.append(a))
     result.toList
   }

@@ -5,34 +5,18 @@ import scala.math.Numeric.Implicits.infixNumericOps
 
 object Dijkstra {
 
-  def findMinPathCost[A, C: Ordering : Numeric](start: A*)(
-    next: A => List[(A, C)],
-    isEnd: A => Boolean
-  ): Option[C] = findMinPath(start :_*)(next, isEnd).map(_._1)
+  def findMinPathCost[A](start: A*)(next: A => List[(A, Int)], isEnd: A => Boolean): Option[Int] =
+    findMinPath(start: _*)(next, isEnd).map(_._1)
 
-  def findMinPath[A, C: Ordering : Numeric](start: A*)(
-    next: A => List[(A, C)],
-    isEnd: A => Boolean
-  ): Option[(C, List[A])] =
-    findMaxPath(start :_*)(next, isEnd)(implicitly, Ordering[C].reverse)
+  def findMinPath[A](start: A*)(next: A => List[(A, Int)], isEnd: A => Boolean): Option[(Int, List[A])] = {
 
-  def findMaxPathCost[A, C: Ordering : Numeric](start: A*)(
-    next: A => List[(A, C)],
-    isEnd: A => Boolean
-  ): Option[C] = findMaxPath(start :_*)(next, isEnd).map(_._1)
-
-  def findMaxPath[A, C: Numeric](start: A*)(
-    next: A => List[(A, C)],
-    isEnd: A => Boolean
-  )(implicit ord: Ordering[C]): Option[(C, List[A])] = {
-
-    val priorityQueue = mutable.PriorityQueue.empty[(A, C)](Ordering.by[(A, C), C](_._2)(ord))
-    val totalCost = mutable.HashMap.empty[A, C]
+    val priorityQueue = mutable.PriorityQueue.empty[(A, Int)](Ordering.by[(A, Int), Int](-_._2))
+    val totalCost = mutable.HashMap.empty[A, Int]
     val parent = mutable.HashMap.empty[A, A]
     val done = mutable.HashSet.empty[A]
 
-    start.foreach(totalCost.update(_, Numeric[C].zero))
-    start.foreach(s => priorityQueue.enqueue((s, Numeric[C].zero)))
+    start.foreach(totalCost.update(_, 0))
+    start.foreach(s => priorityQueue.enqueue((s, 0)))
 
     while (priorityQueue.nonEmpty) {
       val (a, _) = priorityQueue.dequeue()
@@ -47,7 +31,7 @@ object Dijkstra {
           next(a)
             .filter { case (b, costB) =>
               !done.contains(b) &&
-                totalCost.get(b).forall(ord.lt(_, costA + costB))
+                totalCost.get(b).forall(_ > costA + costB)
             }
             .foreach { case (b, costB) =>
               val totalBCost = costA + costB
@@ -62,46 +46,6 @@ object Dijkstra {
     }
 
     None
-  }
-
-  def findMaxPathCostsToAll[A, C: Numeric](start: A)(
-    next: A => List[(A, C)]
-  )(implicit ord: Ordering[C]): Map[A, C] = {
-
-    val priorityQueue = mutable.PriorityQueue.empty[(A, C)](Ordering.by[(A, C), C](_._2)(ord))
-    val totalCost = mutable.HashMap.empty[A, C]
-    val parent = mutable.HashMap.empty[A, A]
-    val done = mutable.HashSet.empty[A]
-
-    totalCost.update(start, Numeric[C].zero)
-    priorityQueue.enqueue((start, Numeric[C].zero))
-
-    while (priorityQueue.nonEmpty) {
-      val (a, _) = priorityQueue.dequeue()
-
-      if (!done(a)) {
-
-        val costA = totalCost(a)
-
-        next(a)
-          .filter { case (b, costB) =>
-            !done.contains(b) &&
-              totalCost.get(b).forall(ord.lt(_, costA + costB))
-          }
-          .foreach { case (b, costB) =>
-            val totalBCost = costA + costB
-
-            parent.update(b, a)
-            totalCost.update(b, totalBCost)
-            priorityQueue.enqueue((b, totalBCost))
-          }
-
-
-        done.add(a)
-      }
-    }
-
-    totalCost.toMap
   }
 
 }
