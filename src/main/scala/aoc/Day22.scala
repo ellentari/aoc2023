@@ -10,10 +10,10 @@ object Day22 extends App {
 
   case class Brick(label: BrickLabel, start: Coordinate3D, end: Coordinate3D) {
 
-    def minZ: Int = start.z min end.z
-    def maxZ: Int = start.z max end.z
+    def minZ: Long = start.z min end.z
+    def maxZ: Long = start.z max end.z
 
-    def addZ(delta: Int): Brick =
+    def addZ(delta: Long): Brick =
       copy(start = start.copy(z = start.z + delta), end = end.copy(z = end.z + delta))
 
     private def xsInterval: Interval = Interval(start.x min end.x, start.x max end.x)
@@ -88,7 +88,7 @@ object Day22 extends App {
       val obstacles = result.filter(_.intersectsXY(brick))
       val firstObstacle = obstacles.map(_.maxZ).maxOption
 
-      val ground = firstObstacle.getOrElse(0) + 1
+      val ground = firstObstacle.getOrElse(0L) + 1
       val delta = brick.minZ - ground
 
       result.append(brick.addZ(-delta))
